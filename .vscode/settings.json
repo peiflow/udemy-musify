@@ -1,0 +1,8 @@
+{
+    // Cygwin, with chere package installed
+    "terminal.integrated.shell.windows":
+        "F:\\cygwin64\\bin\\bash.exe",
+    
+    "terminal.integrated.shellArgs.windows": 
+    ["/bin/xhere", "/bin/bash"]
+}
