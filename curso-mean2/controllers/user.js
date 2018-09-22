@@ -1,7 +1,11 @@
 'use strict'
+
+var fs = require('fs');
+var path = require('path');
 var bcrypt = require('bcrypt-nodejs');
 var chalk = require('chalk');
 var User = require('../models/user');
+var jwt = require('../services/jwt');
 
 function pruebas(req, res){
     res.status(200).send({
@@ -62,10 +66,11 @@ function loginUser(req, res)
                 res.status(404).send({message:'User does not exists'});
             }else{
                 bcrypt.compare(password, user.password, (err, check)=>{
-                    if(check)
-                    {
+                    if(check){                    
                         if(params.gethash){
-
+                            res.status(200).send({
+                                token: jwt.createToken(user)
+                            });
                         }else{
                             res.status(200).send({user});
                         }
@@ -78,8 +83,78 @@ function loginUser(req, res)
     });
 }
 
+function updateUser(req, res){
+    var userId = req.params.id;
+    var update = req.body;
+
+    User.findByIdAndUpdate(userId, update, (err, userUpdated)=>{
+        if(err){
+            res.status(500).send({message: 'Error while updating user'});
+        }else{
+            if(!userUpdated){
+                res.status(404).send({message: 'Can not find user'});
+            }else{
+                res.status(200).send({user: userUpdated});
+            }
+        }
+    });
+}
+
+function uploadImage(req, res){
+    var userId = req.params.id;
+    var file_name = '';
+
+    if(req.files){
+        var file_path = req.files.image.path;
+        var file_split = file_path.split('\\');
+        var file_name = file_split[2];
+
+        var file_split = file_name.split('\.');
+        var file_ext = file_split[1];
+
+        if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif' ){
+            User.findByIdAndUpdate(userId, {
+                image: file_name
+            },
+            (err, userUpdated)=>{
+                if(err){
+                    res.status(500).send({message: 'Error while updating user'});
+                }else{
+                    if(!userUpdated){
+                        res.status(404).send({message: 'Can not find user'});
+                    }else{
+                        res.status(500).send({user: userUpdated});
+                    }
+                }
+            });
+        }else{
+            res.status(200).send({message: 'Invalid image extension'});
+        }
+
+        console.log(chalk.magenta(file_name));
+    }else{
+        res.status(200).send({message: 'Image not uploaded'});
+    }
+}
+
+function getImageFile(req, res)
+{
+    var imageFile = req.params.imageFile;
+    var pathFile = './uploads/users/'+imageFile;
+    fs.exists((pathFile), (exists)=>{
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(404).send({message: 'Image not found'});
+        }
+    });
+}
+
 module.exports = {
     pruebas,
     saveUser,
-    loginUser
+    loginUser,
+    updateUser,
+    uploadImage,
+    getImageFile
 };
