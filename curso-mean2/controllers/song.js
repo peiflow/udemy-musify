@@ -111,10 +111,61 @@ function deleteSong(req, res){
     });
 }
 
+function uploadFile(req, res){
+    var songId = req.params.id;
+    var file_name = "";
+
+    if(req.files){
+        var file_path = req.files.file.path;
+        var file_split = file_path.split('\\');
+        var file_name = file_split[2];
+
+        var file_split = file_name.split('\.');
+        var file_ext = file_split[1];
+
+        if(file_ext == 'mp3'){
+            Song.findByIdAndUpdate(songId, {
+                file: file_name
+            },
+            (err, songUpdated)=>{
+                if(err){
+                    res.status(500).send({message: 'Error while updating song'});
+                }else{
+                    if(!songUpdated){
+                        res.status(404).send({message: 'Can not find song'});
+                    }else{
+                        res.status(200).send({songUpdated});
+                    }
+                }
+            });
+        }else{
+            res.status(200).send({message: 'Invalid file extension'});
+        }
+
+        console.log(chalk.magenta(file_name));
+    }else{
+        res.status(200).send({message: 'Song not uploaded'});
+    }
+}
+
+function getSongFile(req, res)
+{
+    var songFile = req.params.songFile;
+    var pathFile = './uploads/songs/' + songFile;
+    fs.exists((pathFile), (exists)=>{
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(404).send({message: 'Song not found'});
+        }
+    });
+}
 module.exports = {
     saveSong,
     getSong,
     getSongs,
     updateSong,
-    deleteSong
+    deleteSong,
+    uploadFile,
+    getSongFile
 }

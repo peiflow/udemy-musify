@@ -138,7 +138,7 @@ function uploadImage(req, res){
                     if(!artistUpdated){
                         res.status(404).send({message: 'Can not find album'});
                     }else{
-                        res.status(500).send({artistUpdated});
+                        res.status(200).send({artistUpdated});
                     }
                 }
             });
@@ -148,7 +148,7 @@ function uploadImage(req, res){
 
         console.log(chalk.magenta(file_name));
     }else{
-        res.status(200).send({message: 'Image not uploaded'});
+        res.status(500).send({message: 'Image not uploaded'});
     }
 }
 
