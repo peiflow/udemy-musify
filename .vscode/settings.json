@@ -4,5 +4,9 @@
         "F:\\cygwin64\\bin\\bash.exe",
     
     "terminal.integrated.shellArgs.windows": 
-    ["/bin/xhere", "/bin/bash"]
+    [
+        "/bin/xhere",
+        "/bin/bash"
+    ],
+    "git.ignoreLimitWarning": true
 }
