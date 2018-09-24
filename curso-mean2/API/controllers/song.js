@@ -134,7 +134,7 @@ function uploadFile(req, res){
                     if(!songUpdated){
                         res.status(404).send({message: 'Can not find song'});
                     }else{
-                        res.status(200).send({songUpdated});
+                        res.status(200).send({songUpdated, song:file_name});
                     }
                 }
             });

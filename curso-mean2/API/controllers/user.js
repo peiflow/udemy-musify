@@ -123,7 +123,7 @@ function uploadImage(req, res){
                     if(!userUpdated){
                         res.status(404).send({message: 'Can not find user'});
                     }else{
-                        res.status(500).send({user: userUpdated});
+                        res.status(500).send({user: userUpdated, image: file_name});
                     }
                 }
             });
