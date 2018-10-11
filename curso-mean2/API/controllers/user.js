@@ -23,7 +23,7 @@ function saveUser(req, res){
     user.name = params.name;
     user.surname = params.surname;
     user.email = params.email;
-    user.rol = 'ROL_ADMIN';
+    user.rol = params.rol;
     user.image = null;
 
     if(params.password){
@@ -54,7 +54,7 @@ function saveUser(req, res){
 function loginUser(req, res)
 {
     var params = req.body;
-    console.log(params);
+    console.log({"req":params});
     var email = params.email;
     var password = params.password;
 
@@ -71,7 +71,9 @@ function loginUser(req, res)
                             res.status(200).send({
                                 token: jwt.createToken(user)
                             });
+                            console.log({"Token":jwt.createToken(user)});
                         }else{
+                            console.log({"res":user});
                             res.status(200).send({user});
                         }
                     }else{
@@ -87,9 +89,12 @@ function updateUser(req, res){
     var userId = req.params.id;
     var update = req.body;
 
+    if(userId != req.user.sub){
+        return res.status(500).send({message:'Action denied', 'params.id':userId, 'req.user':req.user.sub});        
+    }
     User.findByIdAndUpdate(userId, update, (err, userUpdated)=>{
         if(err){
-            res.status(500).send({message: 'Error while updating user'});
+            res.status(500).send({message: 'Error while updating user', error:err});
         }else{
             if(!userUpdated){
                 res.status(404).send({message: 'Can not find user'});

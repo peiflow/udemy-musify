@@ -2,11 +2,107 @@
   <h1>
     {{title}}
   </h1>
+  <nav id="navigation">
+    <a href="#">
+      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+      Search
+    </a>
+    <a href="#">
+      <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+      Artists
+    </a>
+    <a href="#">
+      <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+      Albums
+    </a>
+  </nav>
+
+  <nav id="user-logged">
+      <div class="user-image" >
+          <img src="{{url + 'get-image-user/' + identity.image}}" style="width:50px;"/>
+      </div>
+    <span id="identity_name">
+      {{identity.name}} {{identity.email}}
+    </span>
+    <span class="btn btn-warning" (click)="logout()" [routerLink]="['/']">
+      Log out
+    </span>
+    <a [routerLink]="['/my-profile']">
+      <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+      My profile
+    </a>
+  </nav>
 </div>
 
 <div class="clearfix"></div>
 
-<div *ngIf="identity" class="central col-lg-12">
+<div *ngIf="identity" class="central col-lg-11">
   <p>You are logged in</p>
+  <router-outlet></router-outlet>
 </div>
 
+<div class="row" *ngIf="!identity">
+  <div class="col-lg-6">
+    <h1>Log in</h1>
+    <div *ngIf="errorMsg" class="alert alert-danger">
+      <strong>Error: </strong>{{errorMsg}}
+    </div>
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit()" name="loginForm" class="col-md-10">
+      <p>
+        <label>Email</label>
+        <input type="text" class="form-control" [(ngModel)]="user.email" name="email" #email="ngModel" ngNativeValidate
+          required>
+        <span *ngIf="!email.valid && email.touched">
+          Email is required
+        </span>
+      </p>
+      <p>
+        <label>Password</label>
+        <input type="password" class="form-control" [(ngModel)]="user.password" name="password" #password
+          ngNativeValidate required>
+      </p>
+      <input type="submit" value="Enter" class="btn btn-primary" />
+    </form>
+  </div>
+
+  <div class="col-lg-6">
+    <h1>Sign in</h1>
+    <div *ngIf="alertRegister" class="alert alert-info">
+      {{alertRegister}}
+    </div>
+    <form #registerForm="ngForm" (ngSubmit)="onSubmitRegister()" class="col-md-10">
+      <p>
+        <label>Name</label>
+        <input type="text" #name="ngModel" name="name" [(ngModel)]="user_register.name" class="form-control" required />
+        <span *ngIf="!name.valid && name.touched">
+          Name is required
+        </span>
+      </p>
+      <p>
+        <label>Surname</label>
+        <input type="text" #surname="ngModel" name="surname" [(ngModel)]="user_register.surname" class="form-control"
+          required />
+        <span *ngIf="!surname.valid && surname.touched">
+          Surname is required
+        </span>
+      </p>
+      <p>
+        <label>Email</label>
+        <input type="text" class="form-control" [(ngModel)]="user_register.email" name="email" #email="ngModel"
+          ngNativeValidate required />
+        <span *ngIf="!email.valid && email.touched">
+          Email is required
+        </span>
+      </p>
+      <p>
+        <label>Password</label>
+        <input type="password" class="form-control" [(ngModel)]="user_register.password" name="password" #password
+          ngNativeValidate required />
+        <span *ngIf="!password.valid && password.touched">
+          Password is required
+        </span>
+      </p>
+      <input type="submit" value="Register" class="btn btn-primary" />
+    </form>
+  </div>
+</div>
